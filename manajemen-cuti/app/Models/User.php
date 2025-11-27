@@ -50,7 +50,13 @@ class User extends Authenticatable
         return $this->belongsTo(Division::class, 'division_id');
     }
 
-    // 2. Karyawan (User) memiliki banyak Pengajuan Cuti
+    // 2. Manager (User) bisa mengelola satu Divisi
+    public function managedDivision()
+    {
+        return $this->hasOne(Division::class, 'manager_id');
+    }
+
+    // 3. Karyawan (User) memiliki banyak Pengajuan Cuti
     public function leaveRequests()
     {
         return $this->hasMany(LeaveRequest::class);
