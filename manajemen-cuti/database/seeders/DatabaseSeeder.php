@@ -49,14 +49,6 @@ class DatabaseSeeder extends Seeder
             'annual_leave_quota' => 12,
         ]);
 
-        $managerIT = User::create([
-            'name' => 'Pak Sadno (Manager IT 2)',
-            'username' => 'manager_it 2',
-            'email' => 'sadno@kantor.com',
-            'password' => $password,
-            'role' => 'division_manager2',
-            'annual_leave_quota' => 12,
-        ]);
 
         // 4. Buat DIVISI IT dan pasang Manager tadi sebagai ketuanya
         $divisiIT = Division::create([
