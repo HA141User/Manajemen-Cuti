@@ -93,13 +93,20 @@
                                             {{ $statusText }}
                                         </span>
                                     </td>
+                                    
                                     <td class="px-6 py-4 text-sm font-medium">
                                         @if($leave->status == 'pending')
-                                            <form action="{{ route('leaves.destroy', $leave->id) }}" method="POST" onsubmit="return confirm('Yakin batal?');">
+                                            <form action="{{ route('leaves.destroy', $leave->id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan cuti ini?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900 font-bold">Batalkan</button>
+                                                <button type="submit" class="text-red-600 dark:text-red-400 hover:underline font-bold">Batalkan</button>
                                             </form>
+
+                                        @elseif($leave->status == 'approved')
+                                            <a href="{{ route('leaves.download_pdf', $leave->id) }}" target="_blank" class="inline-flex items-center px-3 py-1 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                                PDF
+                                            </a>
                                         @else
                                             <span class="text-gray-400 text-xs">-</span>
                                         @endif
