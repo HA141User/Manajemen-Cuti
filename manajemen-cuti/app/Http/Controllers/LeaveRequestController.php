@@ -38,7 +38,7 @@ class LeaveRequestController extends Controller
             'reason' => 'required|string',
             'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // Maks 2MB
         ]);
-
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
@@ -138,6 +138,7 @@ class LeaveRequestController extends Controller
 
         // Kembalikan Kuota jika Cuti Tahunan
         if ($leaveRequest->leave_type == 'annual') {
+            /** @var \App\Models\User $user */
             $user = Auth::user();
             $user->increment('annual_leave_quota', $leaveRequest->total_days);
         }
