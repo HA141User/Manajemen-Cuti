@@ -54,23 +54,24 @@
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach($requests as $leave)
                                 <tr>
-                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300 align-top">
                                         {{ $leave->created_at->format('d M Y') }}
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-4 align-top">
                                         @if($leave->leave_type == 'annual')
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Tahunan</span>
                                         @else
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Sakit</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
+                                    <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 align-top">
                                         {{ $leave->start_date->format('d M') }} - {{ $leave->end_date->format('d M Y') }}
                                     </td>
-                                    <td class="px-6 py-4 text-sm font-bold text-gray-700 dark:text-gray-200">
+                                    <td class="px-6 py-4 text-sm font-bold text-gray-700 dark:text-gray-200 align-top">
                                         {{ $leave->total_days }} Hari Kerja
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    
+                                    <td class="px-6 py-4 whitespace-nowrap align-top">
                                         @php
                                             $statusClass = match($leave->status) {
                                                 'pending' => 'bg-gray-200 text-gray-800',
@@ -89,12 +90,21 @@
                                                 default => $leave->status
                                             };
                                         @endphp
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusClass }}">
-                                            {{ $statusText }}
-                                        </span>
+                                        
+                                        <div class="mb-2">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusClass }}">
+                                                {{ $statusText }}
+                                            </span>
+                                        </div>
+
+                                        @if($leave->status == 'rejected' && $leave->rejection_reason)
+                                            <div class="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-xs text-red-600 dark:text-red-300 italic max-w-xs whitespace-normal">
+                                                <strong>Catatan:</strong> "{{ $leave->rejection_reason }}"
+                                            </div>
+                                        @endif
                                     </td>
                                     
-                                    <td class="px-6 py-4 text-sm font-medium">
+                                    <td class="px-6 py-4 text-sm font-medium align-top">
                                         @if($leave->status == 'pending')
                                             <form action="{{ route('leaves.destroy', $leave->id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan cuti ini?');">
                                                 @csrf
