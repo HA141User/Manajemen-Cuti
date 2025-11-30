@@ -9,20 +9,22 @@ class Division extends Model
 {
     use HasFactory;
 
-    // PASTIKAN 'manager_id' ADA DI SINI
-    protected $fillable = [
-        'name',
-        'description',
-        'manager_id', 
-    ];
+    protected $fillable = ['name', 'description', 'manager_id'];
 
+    /**
+     * Relasi: Divisi memiliki satu Manager (User).
+     */
     public function manager()
     {
         return $this->belongsTo(User::class, 'manager_id');
     }
 
-    public function members()
+    /**
+     * Relasi: Divisi memiliki banyak Anggota (Users).
+     * INI YANG TADI HILANG DAN MENYEBABKAN ERROR.
+     */
+    public function users()
     {
-        return $this->hasMany(User::class, 'division_id');
+        return $this->hasMany(User::class);
     }
 }

@@ -3,81 +3,79 @@
 namespace App\Http\Controllers;
 
 use App\Models\Division;
-use App\Models\User;
+use App\Models\User; // <--- PENTING: Jangan lupa import model User
 use Illuminate\Http\Request;
 
 class DivisionController extends Controller
 {
-    // 1. TAMPILKAN DAFTAR DIVISI [cite: 890-894]
+    /**
+     * Tampilkan daftar divisi.
+     */
     public function index()
     {
-        $divisions = Division::with('manager')->withCount('members')->get();
+        // Mengambil data divisi beserta info manager dan jumlah anggotanya
+        $divisions = Division::with('manager')->withCount('users')->get();
+        
         return view('admin.divisions.index', compact('divisions'));
     }
 
-    // 2. HALAMAN TAMBAH DIVISI [cite: 895-901]
+    /**
+     * Tampilkan form buat divisi baru.
+     */
     public function create()
     {
-        // Cari User role Manager yang belum punya divisi
-        $availableManagers = User::where('role', 'division_manager')
-            ->whereDoesntHave('managedDivision')
-            ->get();
+        // PERBAIKAN: Ambil daftar user yang jabatannya 'division_manager'
+        // untuk ditampilkan di dropdown pilihan ketua divisi
+        $managers = User::where('role', 'division_manager')->get();
 
-        return view('admin.divisions.create', compact('availableManagers'));
+        return view('admin.divisions.create', compact('managers'));
     }
 
-    // 3. PROSES SIMPAN DIVISI BARU [cite: 902-906]
+    /**
+     * Simpan divisi baru ke database.
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:divisions,name',
-            'manager_id' => 'required|exists:users,id',
-            'description' => 'nullable|string',
+            'name' => 'required|string|max:255|unique:divisions,name',
+            'manager_id' => 'nullable|exists:users,id',
         ]);
 
-        // Buat Divisi
-        $division = Division::create($request->all());
-
-        // Update User Manager agar terikat ke divisi ini
-        $manager = User::find($request->manager_id);
-        $manager->update(['division_id' => $division->id]);
+        Division::create($request->all());
 
         return redirect()->route('divisions.index')->with('success', 'Divisi berhasil dibuat!');
     }
 
-    // 4. HALAMAN EDIT DIVISI [cite: 907-911]
+    /**
+     * Tampilkan form edit divisi.
+     */
     public function edit(Division $division)
     {
-        // Manager nganggur + Manager divisi ini sekarang
-        $availableManagers = User::where('role', 'division_manager')
-            ->whereDoesntHave('managedDivision')
-            ->orWhere('id', $division->manager_id)
-            ->get();
+        // PERBAIKAN: Kita juga butuh daftar manager di halaman edit
+        $managers = User::where('role', 'division_manager')->get();
 
-        return view('admin.divisions.edit', compact('division', 'availableManagers'));
+        return view('admin.divisions.edit', compact('division', 'managers'));
     }
 
-    // 5. PROSES UPDATE DIVISI [cite: 912-915]
+    /**
+     * Update data divisi.
+     */
     public function update(Request $request, Division $division)
     {
         $request->validate([
-            'name' => 'required|unique:divisions,name,' . $division->id,
-            'manager_id' => 'required|exists:users,id',
-            'description' => 'nullable|string',
+            // Validasi unik kecuali untuk id divisi ini sendiri
+            'name' => 'required|string|max:255|unique:divisions,name,' . $division->id,
+            'manager_id' => 'nullable|exists:users,id',
         ]);
 
         $division->update($request->all());
 
-        // Update Manager Baru
-        $newManager = User::find($request->manager_id);
-        if ($newManager) {
-            $newManager->update(['division_id' => $division->id]);
-        }
-
-        return redirect()->route('divisions.index')->with('success', 'Divisi berhasil diperbarui!');
+        return redirect()->route('divisions.index')->with('success', 'Data divisi diperbarui!');
     }
 
-    // 6. HAPUS DIVISI [cite: 916-920]
+    /**
+     * Hapus divisi.
+     */
     public function destroy(Division $division)
     {
         $division->delete();

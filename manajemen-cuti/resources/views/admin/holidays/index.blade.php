@@ -1,57 +1,70 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Manajemen Hari Libur') }}
-        </h2>
+        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+            <h2 class="font-bold text-2xl text-primary leading-tight tracking-tight">
+                {{ __('Kalender Libur') }}
+            </h2>
+            
+            <a href="{{ route('holidays.create') }}" class="group inline-flex items-center px-8 py-3 bg-accent border border-transparent rounded-full font-bold text-xs text-white uppercase tracking-widest hover:bg-[#8e6a4e] active:bg-accent focus:outline-none transition ease-in-out duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 gap-3">
+                <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span>Tambah Tanggal Merah</span>
+            </a>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="flex justify-end mb-4">
-                <a href="{{ route('holidays.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700">
-                    + Tambah Hari Libur
-                </a>
-            </div>
-
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
+    <div class="py-10">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+            
+            <div class="bg-paper overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-3xl border border-cream">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-cream">
+                        <thead class="bg-cream/30">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Tanggal</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Keterangan</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Aksi</th>
+                                <th scope="col" class="px-8 py-6 text-left text-xs font-extrabold text-secondary uppercase tracking-wider">Tanggal</th>
+                                <th scope="col" class="px-6 py-6 text-left text-xs font-extrabold text-secondary uppercase tracking-wider">Keterangan / Perayaan</th>
+                                <th scope="col" class="px-8 py-6 text-right text-xs font-extrabold text-secondary uppercase tracking-wider">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody class="bg-paper divide-y divide-cream/50">
                             @foreach($holidays as $holiday)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-bold">{{ $holiday->holiday_date->format('d M Y') }}</div>
-                                    <div class="text-xs text-gray-500">{{ $holiday->holiday_date->format('l') }}</div>
+                            <tr class="hover:bg-cream/10 transition duration-150 ease-in-out group">
+                                
+                                <td class="px-8 py-5 whitespace-nowrap">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-12 bg-white border border-cream rounded-xl flex flex-col items-center justify-center shadow-sm group-hover:border-accent transition">
+                                            <span class="text-[10px] font-bold text-red-500 uppercase">{{ $holiday->holiday_date->format('M') }}</span>
+                                            <span class="text-lg font-extrabold text-primary leading-none">{{ $holiday->holiday_date->format('d') }}</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-sm font-bold text-primary">{{ $holiday->holiday_date->translatedFormat('l') }}</span>
+                                            <span class="text-xs text-secondary/60">{{ $holiday->holiday_date->format('Y') }}</span>
+                                        </div>
+                                    </div>
                                 </td>
-                                <td class="px-6 py-4 text-sm font-medium">
+
+                                <td class="px-6 py-5 whitespace-nowrap text-sm font-medium text-secondary">
                                     {{ $holiday->description }}
                                 </td>
-                                <td class="px-6 py-4 text-sm font-medium">
-                                    <a href="{{ route('holidays.edit', $holiday->id) }}" class="text-indigo-600 dark:text-indigo-400 hover:underline mr-3">Edit</a>
-                                    <form action="{{ route('holidays.destroy', $holiday->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Hapus tanggal ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 dark:text-red-400 hover:underline">Hapus</button>
-                                    </form>
+
+                                <td class="px-8 py-5 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end items-center gap-3">
+                                        <a href="{{ route('holidays.edit', $holiday->id) }}" class="text-secondary hover:text-accent font-bold transition">Edit</a>
+                                        <form action="{{ route('holidays.destroy', $holiday->id) }}" method="POST" class="inline-block" id="delete-hol-{{ $holiday->id }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" onclick="confirmDelete('delete-hol-{{ $holiday->id }}')" class="text-red-400 hover:text-red-600 font-bold transition">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="mt-4">{{ $holidays->links() }}</div>
+                </div>
+                <div class="px-8 py-5 border-t border-cream bg-cream/20">
+                    {{ $holidays->links() }}
                 </div>
             </div>
         </div>
