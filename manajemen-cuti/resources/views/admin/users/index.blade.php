@@ -1,77 +1,101 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+            <h2 class="font-bold text-2xl text-primary leading-tight tracking-tight">
                 {{ __('Manajemen Pengguna') }}
             </h2>
-            <a href="{{ route('users.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 shadow-md">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Tambah User
+            
+            <a href="{{ route('users.create') }}" class="group inline-flex items-center px-8 py-3 bg-primary border border-transparent rounded-full font-bold text-xs text-cream uppercase tracking-widest hover:bg-secondary active:bg-primary focus:outline-none focus:border-secondary focus:ring ring-secondary/50 disabled:opacity-25 transition ease-in-out duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 gap-3">
+                <svg class="w-5 h-5 text-accent group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>Tambah User Baru</span>
             </a>
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-10">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-2xl border border-gray-100 dark:border-gray-700">
+            <div class="bg-paper overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-3xl border border-cream">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-700/50">
+                    <table class="min-w-full divide-y divide-cream">
+                        <thead class="bg-cream/30">
                             <tr>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">User Profile</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role & Jabatan</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kuota Cuti</th>
-                                <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aksi</th>
+                                <th scope="col" class="px-8 py-6 text-left text-xs font-extrabold text-secondary uppercase tracking-wider">User Profile</th>
+                                <th scope="col" class="px-6 py-6 text-left text-xs font-extrabold text-secondary uppercase tracking-wider">Role & Jabatan</th>
+                                <th scope="col" class="px-6 py-6 text-left text-xs font-extrabold text-secondary uppercase tracking-wider">Divisi</th>
+                                <th scope="col" class="px-6 py-6 text-left text-xs font-extrabold text-secondary uppercase tracking-wider">Sisa Cuti</th>
+                                <th scope="col" class="px-8 py-6 text-right text-xs font-extrabold text-secondary uppercase tracking-wider">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        
+                        <tbody class="bg-paper divide-y divide-cream/50">
                             @foreach($users as $user)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition duration-150 ease-in-out">
-                                <td class="px-6 py-4 whitespace-nowrap">
+                            <tr class="hover:bg-cream/10 transition duration-150 ease-in-out group">
+                                
+                                <td class="px-8 py-5 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
-                                            <div class="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-bold shadow-sm">
+                                        <div class="flex-shrink-0 h-11 w-11">
+                                            <div class="h-11 w-11 rounded-2xl bg-secondary text-cream flex items-center justify-center font-bold text-base shadow-sm group-hover:bg-accent group-hover:text-white transition duration-300">
                                                 {{ substr($user->name, 0, 1) }}
                                             </div>
                                         </div>
                                         <div class="ml-4">
-                                            <div class="text-sm font-bold text-gray-900 dark:text-white">{{ $user->name }}</div>
-                                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $user->email }}</div>
+                                            <div class="text-sm font-bold text-primary">{{ $user->name }}</div>
+                                            <div class="text-xs text-secondary/70">{{ $user->email }}</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex flex-col items-start">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                            {{ $user->role == 'admin' ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300' : 
-                                              ($user->role == 'hr' ? 'bg-pink-100 text-pink-800 dark:bg-pink-900/50 dark:text-pink-300' : 
-                                              ($user->role == 'division_manager' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300' : 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300')) }}">
-                                            {{ ucfirst(str_replace('_', ' ', $user->role)) }}
-                                        </span>
-                                        <span class="text-xs text-gray-400 mt-1">Div: {{ $user->division ? $user->division->name : '-' }}</span>
+
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <span class="px-3 py-1 inline-flex text-[11px] leading-5 font-bold uppercase tracking-wide rounded-lg 
+                                        {{ $user->role == 'admin' ? 'bg-red-50 text-red-700 border border-red-100' : 
+                                          ($user->role == 'hr' ? 'bg-purple-50 text-purple-700 border border-purple-100' : 
+                                          ($user->role == 'division_manager' ? 'bg-orange-50 text-orange-700 border border-orange-100' : 
+                                          'bg-green-50 text-green-700 border border-green-100')) }}">
+                                        {{ str_replace('_', ' ', $user->role) }}
+                                    </span>
+                                </td>
+
+                                <td class="px-6 py-5 whitespace-nowrap text-sm text-secondary font-medium">
+                                    @if($user->division)
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-2 h-2 rounded-full bg-accent"></div>
+                                            {{ $user->division->name }}
+                                        </div>
+                                    @else
+                                        <span class="text-gray-400 italic text-xs pl-4">- Non Divisi -</span>
+                                    @endif
+                                </td>
+
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <span class="text-lg font-bold text-primary">{{ $user->annual_leave_quota }}</span>
+                                        <span class="text-xs text-secondary/60 ml-1 font-medium">Hari</span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900 dark:text-gray-100 font-bold">{{ $user->annual_leave_quota }} <span class="text-xs font-normal text-gray-500">Hari</span></div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="{{ route('users.edit', $user->id) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 font-bold mr-3">Edit</a>
-                                    
-                                    @if(auth()->id() !== $user->id)
-                                    <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin hapus user ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" onclick="confirmDelete(this)" class="text-red-600 dark:text-red-400 hover:text-red-900 font-bold">Hapus</button>
-                                    </form>
-                                    @endif
+
+                                <td class="px-8 py-5 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end items-center gap-3">
+                                        <a href="{{ route('users.edit', $user->id) }}" class="text-secondary hover:text-accent font-bold transition">Edit</a>
+                                        
+                                        @if(auth()->id() !== $user->id)
+                                        <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline-block" id="delete-form-{{ $user->id }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" onclick="confirmDelete('delete-form-{{ $user->id }}')" class="text-red-400 hover:text-red-600 font-bold transition">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                
+                <div class="px-8 py-5 border-t border-cream bg-cream/20">
                     {{ $users->links() }}
                 </div>
             </div>
