@@ -1,56 +1,53 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-2xl text-primary leading-tight">
+        <h2 class="font-semibold text-xl text-nordic-dark leading-tight">
             {{ __('Buat Divisi Baru') }}
         </h2>
     </x-slot>
 
-    <div class="py-10">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-paper shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-3xl border border-cream overflow-hidden">
+    <div class="py-12">
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+            <div class="card">
                 
-                <div class="bg-primary/5 px-8 py-6 border-b border-cream">
-                    <h3 class="text-lg font-bold text-primary">Detail Departemen</h3>
-                    <p class="text-sm text-secondary/70">Tentukan nama divisi dan ketuanya.</p>
-                </div>
+                <form action="{{ route('admin.divisions.store') }}" method="POST">
+                    @csrf
 
-                <div class="p-8">
-                    <form action="{{ route('divisions.store') }}" method="POST">
-                        @csrf
+                    <div class="mb-5">
+                        <label class="block text-sm font-bold text-nordic-dark mb-2">Nama Divisi</label>
+                        <input type="text" name="name" value="{{ old('name') }}" required placeholder="Contoh: Marketing, IT, Finance"
+                               class="form-input w-full">
+                        @error('name') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                    </div>
 
-                        <div class="mb-6">
-                            <label class="block text-sm font-bold text-secondary mb-2">Nama Divisi</label>
-                            <input type="text" name="name" class="w-full rounded-xl border-secondary/20 bg-cream/10 focus:border-accent focus:ring-accent text-primary placeholder-secondary/40 transition shadow-sm" placeholder="Contoh: Finance & Accounting" required>
+                    <div class="mb-5">
+                        <label class="block text-sm font-bold text-nordic-dark mb-2">Deskripsi (Opsional)</label>
+                        <textarea name="description" rows="3" placeholder="Jelaskan fungsi divisi ini..."
+                               class="form-input w-full">{{ old('description') }}</textarea>
+                    </div>
+
+                    <div class="mb-8">
+                        <label class="block text-sm font-bold text-nordic-dark mb-2">Ketua Divisi</label>
+                        <select name="leader_id" required class="form-input w-full bg-slate-50">
+                            <option value="">-- Pilih User (Role Leader) --</option>
+                            @foreach($potentialLeaders as $leader)
+                                <option value="{{ $leader->id }}" {{ old('leader_id') == $leader->id ? 'selected' : '' }}>
+                                    {{ $leader->name }} ({{ $leader->email }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="mt-2 p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-700 flex items-start">
+                            <svg class="w-4 h-4 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span>Hanya user dengan Role <b>'Leader'</b> yang belum memimpin divisi lain yang muncul di sini. Jika kosong, pastikan Anda sudah membuat user dengan role Leader terlebih dahulu.</span>
                         </div>
+                        @error('leader_id') <span class="text-rose-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                    </div>
 
-                        <div class="mb-8">
-                            <label class="block text-sm font-bold text-secondary mb-2">Ketua Divisi (Manager)</label>
-                            
-                            <div class="relative">
-                                <select name="manager_id" class="w-full rounded-xl border-secondary/20 bg-cream/10 focus:border-accent focus:ring-accent text-primary transition shadow-sm appearance-none bg-none pr-10">
-                                    <option value="">-- Pilih Manager (Opsional) --</option>
-                                    @foreach($managers as $manager)
-                                        <option value="{{ $manager->id }}">{{ $manager->name }}</option>
-                                    @endforeach
-                                </select>
-                                
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-secondary">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </div>
-                            </div>
-                            <p class="text-xs text-secondary/50 mt-2">*Hanya user dengan role "Division Manager" yang muncul di sini.</p>
-                        </div>
+                    <div class="flex justify-end gap-3 pt-4 border-t border-nordic-mute">
+                        <a href="{{ route('admin.divisions.index') }}" class="btn-secondary">Batal</a>
+                        <button type="submit" class="btn-primary">Simpan Divisi</button>
+                    </div>
 
-                        <div class="flex items-center justify-end gap-4 bg-cream/20 -m-8 p-6 mt-4 border-t border-cream">
-                            <a href="{{ route('divisions.index') }}" class="px-6 py-3 rounded-xl text-sm font-bold text-secondary hover:bg-cream/50 transition">
-                                Batal
-                            </a>
-                            <button type="submit" class="px-8 py-3 bg-primary text-cream font-bold rounded-xl shadow-lg hover:bg-secondary hover:shadow-xl transition transform hover:-translate-y-1">
-                                Simpan Divisi
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                </form>
             </div>
         </div>
     </div>

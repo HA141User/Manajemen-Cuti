@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Division;
-use App\Models\Holiday;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -15,85 +14,65 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Password default untuk semua akun: "password"
-        $password = Hash::make('password');
-
-        // 1. Buat ADMIN
+        // 1. Buat User ADMIN
         User::create([
-            'name' => 'Admin Sistem',
+            'name' => 'Administrator',
             'username' => 'admin',
-            'email' => 'admin@kantor.com',
-            'password' => $password,
+            'email' => 'admin@company.com',
+            'password' => Hash::make('password'),
             'role' => 'admin',
-            'annual_leave_quota' => 12,
+            'join_date' => '2020-01-01',
         ]);
 
-        // 2. Buat HRD
+        // 2. Buat User HRD
         User::create([
-            'name' => 'Ibu HRD',
+            'name' => 'HR Manager',
             'username' => 'hrd',
-            'email' => 'hrd@kantor.com',
-            'password' => $password,
-            'role' => 'hr',
-            'annual_leave_quota' => 12,
+            'email' => 'hrd@company.com',
+            'password' => Hash::make('password'),
+            'role' => 'hrd',
+            'join_date' => '2021-01-01',
         ]);
 
-        // 3. Buat KETUA DIVISI (Manager IT)
-        // Kita buat usernya dulu
-        $managerIT = User::create([
-            'name' => 'Pak Budi (Manager IT)',
-            'username' => 'manager_it',
-            'email' => 'budi@kantor.com',
-            'password' => $password,
-            'role' => 'division_manager',
-            'annual_leave_quota' => 12,
+        // 3. Buat User KETUA DIVISI (Awalnya belum punya divisi)
+        $leader = User::create([
+            'name' => 'Pak Budi (IT Lead)',
+            'username' => 'budi_leader',
+            'email' => 'budi@company.com',
+            'password' => Hash::make('password'),
+            'role' => 'leader',
+            'join_date' => '2022-01-01',
         ]);
 
-
-        // 4. Buat DIVISI IT dan pasang Manager tadi sebagai ketuanya
-        $divisiIT = Division::create([
+        // 4. Buat DIVISI IT dan set Pak Budi sebagai ketua
+        $division = Division::create([
             'name' => 'Information Technology',
-            'description' => 'Tim Pengembang Aplikasi',
-            'manager_id' => $managerIT->id,
+            'description' => 'Divisi ngurusin kodingan',
+            'leader_id' => $leader->id, // Set Leader
         ]);
 
-        // Update data Pak Budi agar dia juga terdata masuk di divisi IT
-        $managerIT->update(['division_id' => $divisiIT->id]);
+        // Update Pak Budi supaya masuk ke divisi IT juga sebagai member
+        $leader->update(['division_id' => $division->id]);
 
-        // 5. Buat KARYAWAN BIASA (Staff IT)
-        // Karyawan ini bawahan Pak Budi
+        // 5. Buat User KARYAWAN (Bawahan Pak Budi)
         User::create([
             'name' => 'Andi Staff',
-            'username' => 'andi',
-            'email' => 'andi@kantor.com',
-            'password' => $password,
-            'role' => 'employee',
-            'division_id' => $divisiIT->id, // Masuk ke divisi IT
-            'annual_leave_quota' => 12,
-            'join_date' => '2023-01-01', // Sudah > 1 tahun
+            'username' => 'andi_staff',
+            'email' => 'andi@company.com',
+            'password' => Hash::make('password'),
+            'role' => 'user',
+            'division_id' => $division->id, // Masuk divisi IT
+            'join_date' => '2023-01-01',
         ]);
 
-        // 6. Buat KARYAWAN BARU (Belum 1 Tahun / Contoh User Lain)
+        // 6. Buat Karyawan Freelance (Tanpa Divisi) untuk tes fitur admin
         User::create([
-            'name' => 'Siti Junior',
+            'name' => 'Siti Probation',
             'username' => 'siti',
-            'email' => 'siti@kantor.com',
-            'password' => $password,
-            'role' => 'employee',
-            'division_id' => $divisiIT->id,
-            'annual_leave_quota' => 0, // Belum dapat cuti
+            'email' => 'siti@company.com',
+            'password' => Hash::make('password'),
+            'role' => 'user',
             'join_date' => date('Y-m-d'), // Baru masuk hari ini
-        ]);
-
-        // 7. Buat HARI LIBUR Contoh (Fitur Opsional)
-        Holiday::create([
-            'holiday_date' => '2025-12-25',
-            'description' => 'Hari Raya Natal',
-        ]);
-        
-        Holiday::create([
-            'holiday_date' => '2025-01-01',
-            'description' => 'Tahun Baru Masehi',
         ]);
     }
 }

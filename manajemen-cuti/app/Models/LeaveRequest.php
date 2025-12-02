@@ -11,45 +11,44 @@ class LeaveRequest extends Model
 
     protected $fillable = [
         'user_id',
-        'leave_type', // annual, sick
+        'type', // annual, sick
+        'status', // pending, approved_leader, approved_hrd, rejected
         'start_date',
         'end_date',
         'total_days',
         'reason',
-        'attachment_path',
-        'address_during_leave',
+        'attachment',
+        'leave_address',
         'emergency_contact',
-        'status', // pending, approved_by_leader, approved, rejected, cancelled
         'leader_approver_id',
-        'hr_approver_id',
-        'rejection_reason',
-        'approved_at',
+        'hrd_approver_id',
+        'rejection_note',
+        'hrd_approval_date'
     ];
 
-    // Mengubah string tanggal di database menjadi objek Date di PHP
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'approved_at' => 'datetime',
+        'hrd_approval_date' => 'date',
     ];
 
-    // --- RELASI ---
+    // RELASI
 
-    // 1. Pengajuan ini milik siapa?
+    // 1. Milik siapa pengajuan ini?
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // 2. Siapa Ketua Divisi yang menyetujui?
+    // 2. Siapa Leader yang approve?
     public function leaderApprover()
     {
         return $this->belongsTo(User::class, 'leader_approver_id');
     }
 
-    // 3. Siapa HRD yang menyetujui?
-    public function hrApprover()
+    // 3. Siapa HRD yang approve?
+    public function hrdApprover()
     {
-        return $this->belongsTo(User::class, 'hr_approver_id');
+        return $this->belongsTo(User::class, 'hrd_approver_id');
     }
 }

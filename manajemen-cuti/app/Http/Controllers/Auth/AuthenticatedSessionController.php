@@ -28,7 +28,20 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        // LOGIKA REDIRECT: Arahkan ke rute spesifik
+        switch ($user->role) {
+            case 'admin':
+                return redirect()->intended(route('admin.dashboard'));
+            case 'hrd':
+                return redirect()->intended(route('hrd.dashboard'));
+            case 'leader':
+                return redirect()->intended(route('leader.dashboard'));
+            default:
+                return redirect()->intended(route('user.dashboard'));
+        }
     }
 
     /**

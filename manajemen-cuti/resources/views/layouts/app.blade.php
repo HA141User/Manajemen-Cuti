@@ -5,28 +5,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'TalentFlow') }}</title>
+        <title>{{ config('app.name', 'NakCuti') }} - Sistem Manajemen Cuti</title>
 
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-        
-        <style>
-            body { font-family: 'Plus Jakarta Sans', sans-serif !important; }
-        </style>
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased text-primary">
-        
-        <div class="min-h-screen bg-cream/30">
+    <body class="font-sans antialiased bg-nordic-light text-nordic-dark">
+        <div class="min-h-screen bg-nordic-light">
             
             @include('layouts.navigation')
 
             @isset($header)
-                <header class="bg-transparent pt-8 pb-2">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+                <header class="bg-white shadow-sm border-b border-nordic-mute">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        <h1 class="text-2xl font-bold text-nordic-dark tracking-tight">
+                            {{ $header }}
+                        </h1>
                     </div>
                 </header>
             @endisset
@@ -35,60 +31,5 @@
                 {{ $slot }}
             </main>
         </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-        <script>
-            // Passing Data Session ke JS (Safe Way)
-            const sessionSuccess = @json(session('success'));
-            const sessionError   = @json(session('error'));
-
-            if (sessionSuccess) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: sessionSuccess,
-                    timer: 3000,
-                    showConfirmButton: false,
-                    background: '#FDFCF8', // Paper color
-                    iconColor: '#2C3930',  // Primary color
-                    color: '#2C3930'
-                });
-            }
-
-            if (sessionError) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal!',
-                    text: sessionError,
-                    background: '#FDFCF8',
-                    confirmButtonColor: '#A27B5C' // Accent color
-                });
-            }
-
-            // Fungsi Global Konfirmasi Hapus
-            window.confirmDelete = function(formId) {
-                Swal.fire({
-                    title: 'Apakah Anda Yakin?',
-                    text: "Data yang dihapus tidak dapat dikembalikan!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33', // Merah tetap merah untuk danger
-                    cancelButtonColor: '#3F4F44', // Secondary color
-                    confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal',
-                    background: '#FDFCF8',
-                    color: '#2C3930'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        if (typeof formId === 'string') {
-                            document.getElementById(formId).submit();
-                        } else {
-                            formId.closest('form').submit();
-                        }
-                    }
-                });
-            };
-        </script>
     </body>
 </html>

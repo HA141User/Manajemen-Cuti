@@ -1,3 +1,38 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        /* Menggunakan warna #F0F5F9 Anda sebagai background body */
+        @apply bg-nordic-light text-nordic-dark antialiased;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-bold text-nordic-dark tracking-tight;
+    }
+}
+
+@layer components {
+    .card {
+        /* Kartu putih di atas background abu-muda, dengan border lembut #C9D6DF */
+        @apply bg-white rounded-xl shadow-sm border border-nordic-mute p-6;
+    }
+    
+    /* Tombol Utama menggunakan warna tergelap #1E2022 */
+    .btn-primary {
+        @apply inline-flex items-center px-4 py-2 bg-nordic-dark border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-nordic-gray focus:bg-nordic-gray active:bg-black focus:outline-none focus:ring-2 focus:ring-nordic-gray focus:ring-offset-2 transition ease-in-out duration-150;
+    }
+
+    /* Tombol Sekunder */
+    .btn-secondary {
+        @apply inline-flex items-center px-4 py-2 bg-white border border-nordic-mute rounded-lg font-semibold text-xs text-nordic-gray uppercase tracking-widest shadow-sm hover:bg-nordic-light focus:outline-none focus:ring-2 focus:ring-nordic-gray focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150;
+    }
+
+    .form-input {
+        @apply border-nordic-mute focus:border-nordic-gray focus:ring-nordic-gray rounded-lg shadow-sm;
+    }
+}

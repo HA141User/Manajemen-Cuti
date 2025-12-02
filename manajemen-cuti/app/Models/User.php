@@ -12,61 +12,76 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * Kolom yang boleh diisi secara massal (Mass Assignment)
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'username',
         'email',
         'password',
-        'role', // admin, hr, division_manager, employee
+        'role', // admin, user, leader, hrd
         'division_id',
         'phone',
         'address',
-        'profile_photo_path',
+        'avatar',
         'annual_leave_quota',
         'join_date',
+        'is_active',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'join_date' => 'date',
-        ];
-    }
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'join_date' => 'date',
+        'is_active' => 'boolean',
+    ];
 
-    // --- RELASI (HUBUNGAN ANTAR TABEL) ---
+    // RELASI
 
-    // 1. Karyawan (User) adalah anggota dari satu Divisi
+    // 1. User sebagai Anggota Divisi
     public function division()
     {
         return $this->belongsTo(Division::class, 'division_id');
     }
 
-    // 2. Manager (User) bisa mengelola satu Divisi
+    // 2. User sebagai Ketua Divisi (Jika dia leader)
     public function managedDivision()
     {
-        return $this->hasOne(Division::class, 'manager_id');
+        return $this->hasOne(Division::class, 'leader_id');
     }
 
-    // 3. Karyawan (User) memiliki banyak Pengajuan Cuti
+    // 3. User sebagai Pemohon Cuti
     public function leaveRequests()
     {
-        return $this->hasMany(LeaveRequest::class);
+        return $this->hasMany(LeaveRequest::class, 'user_id');
     }
 
-    // --- HELPER FUNCTION (BANTUAN) ---
-    
-    // Fungsi cek role biar gampang di kodingan nanti: $user->hasRole('admin')
-    public function hasRole($role)
+    // 4. User sebagai Penyetuju (Leader)
+    public function approvalsAsLeader()
     {
-        return $this->role === $role;
+        return $this->hasMany(LeaveRequest::class, 'leader_approver_id');
+    }
+
+    // 5. User sebagai Penyetuju Final (HRD)
+    public function approvalsAsHRD()
+    {
+        return $this->hasMany(LeaveRequest::class, 'hrd_approver_id');
     }
 }

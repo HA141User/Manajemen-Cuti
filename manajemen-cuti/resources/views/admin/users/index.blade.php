@@ -1,103 +1,145 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-            <h2 class="font-bold text-2xl text-primary leading-tight tracking-tight">
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-nordic-dark leading-tight">
                 {{ __('Manajemen Pengguna') }}
             </h2>
-            
-            <a href="{{ route('users.create') }}" class="group inline-flex items-center px-8 py-3 bg-primary border border-transparent rounded-full font-bold text-xs text-cream uppercase tracking-widest hover:bg-secondary active:bg-primary focus:outline-none focus:border-secondary focus:ring ring-secondary/50 disabled:opacity-25 transition ease-in-out duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 gap-3">
-                <svg class="w-5 h-5 text-accent group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                <span>Tambah User Baru</span>
+            <a href="{{ route('admin.users.create') }}" class="btn-primary">
+                + Tambah User
             </a>
         </div>
     </x-slot>
 
-    <div class="py-10">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             
-            <div class="bg-paper overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:rounded-3xl border border-cream">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-cream">
-                        <thead class="bg-cream/30">
+            @if(session('success'))
+                <div class="bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded-lg relative" role="alert">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            @endif
+
+             @if(session('error'))
+                <div class="bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded-lg relative" role="alert">
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
+            @endif
+
+            <div class="card">
+                <form method="GET" action="{{ route('admin.users.index') }}">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div class="col-span-1">
+                            <label class="text-xs font-bold text-nordic-gray uppercase mb-1 block">Pencarian</label>
+                            <input type="text" name="search" placeholder="Nama atau Email..." value="{{ request('search') }}" 
+                                   class="form-input w-full text-sm">
+                        </div>
+
+                        <div class="col-span-1">
+                            <label class="text-xs font-bold text-nordic-gray uppercase mb-1 block">Role</label>
+                            <select name="role" class="form-input w-full text-sm">
+                                <option value="">-- Semua Role --</option>
+                                <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>Karyawan (User)</option>
+                                <option value="leader" {{ request('role') == 'leader' ? 'selected' : '' }}>Ketua Divisi</option>
+                                <option value="hrd" {{ request('role') == 'hrd' ? 'selected' : '' }}>HRD</option>
+                                <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                            </select>
+                        </div>
+
+                        <div class="col-span-1">
+                            <label class="text-xs font-bold text-nordic-gray uppercase mb-1 block">Divisi</label>
+                            <select name="division_id" class="form-input w-full text-sm">
+                                <option value="">-- Semua Divisi --</option>
+                                @foreach($divisions as $div)
+                                    <option value="{{ $div->id }}" {{ request('division_id') == $div->id ? 'selected' : '' }}>
+                                        {{ $div->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-span-1 flex gap-2">
+                            <button type="submit" class="btn-primary w-full justify-center">
+                                Filter
+                            </button>
+                            @if(request()->has('search') || request()->has('role') || request()->has('division_id'))
+                                <a href="{{ route('admin.users.index') }}" class="btn-secondary w-auto flex items-center justify-center">
+                                    Reset
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card overflow-hidden p-0"> <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-nordic-light text-nordic-dark font-bold uppercase text-xs border-b border-nordic-mute">
                             <tr>
-                                <th scope="col" class="px-8 py-6 text-left text-xs font-extrabold text-secondary uppercase tracking-wider">User Profile</th>
-                                <th scope="col" class="px-6 py-6 text-left text-xs font-extrabold text-secondary uppercase tracking-wider">Role & Jabatan</th>
-                                <th scope="col" class="px-6 py-6 text-left text-xs font-extrabold text-secondary uppercase tracking-wider">Divisi</th>
-                                <th scope="col" class="px-6 py-6 text-left text-xs font-extrabold text-secondary uppercase tracking-wider">Sisa Cuti</th>
-                                <th scope="col" class="px-8 py-6 text-right text-xs font-extrabold text-secondary uppercase tracking-wider">Aksi</th>
+                                <th class="px-6 py-4">Nama / Email</th>
+                                <th class="px-6 py-4">Role</th>
+                                <th class="px-6 py-4">Divisi</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4 text-right">Aksi</th>
                             </tr>
                         </thead>
-                        
-                        <tbody class="bg-paper divide-y divide-cream/50">
-                            @foreach($users as $user)
-                            <tr class="hover:bg-cream/10 transition duration-150 ease-in-out group">
-                                
-                                <td class="px-8 py-5 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-11 w-11">
-                                            <div class="h-11 w-11 rounded-2xl bg-secondary text-cream flex items-center justify-center font-bold text-base shadow-sm group-hover:bg-accent group-hover:text-white transition duration-300">
-                                                {{ substr($user->name, 0, 1) }}
-                                            </div>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-bold text-primary">{{ $user->name }}</div>
-                                            <div class="text-xs text-secondary/70">{{ $user->email }}</div>
-                                        </div>
-                                    </div>
+                        <tbody class="divide-y divide-nordic-mute">
+                            @forelse($users as $user)
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-6 py-4">
+                                    <div class="font-bold text-nordic-dark">{{ $user->name }}</div>
+                                    <div class="text-xs text-nordic-gray">{{ $user->email }}</div>
                                 </td>
-
-                                <td class="px-6 py-5 whitespace-nowrap">
-                                    <span class="px-3 py-1 inline-flex text-[11px] leading-5 font-bold uppercase tracking-wide rounded-lg 
-                                        {{ $user->role == 'admin' ? 'bg-red-50 text-red-700 border border-red-100' : 
-                                          ($user->role == 'hr' ? 'bg-purple-50 text-purple-700 border border-purple-100' : 
-                                          ($user->role == 'division_manager' ? 'bg-orange-50 text-orange-700 border border-orange-100' : 
-                                          'bg-green-50 text-green-700 border border-green-100')) }}">
-                                        {{ str_replace('_', ' ', $user->role) }}
+                                <td class="px-6 py-4">
+                                    <span class="badge 
+                                        {{ $user->role === 'admin' ? 'bg-rose-100 text-rose-800' : '' }}
+                                        {{ $user->role === 'hrd' ? 'bg-purple-100 text-purple-800' : '' }}
+                                        {{ $user->role === 'leader' ? 'bg-amber-100 text-amber-800' : '' }}
+                                        {{ $user->role === 'user' ? 'bg-emerald-100 text-emerald-800' : '' }}">
+                                        {{ ucfirst($user->role) }}
                                     </span>
                                 </td>
-
-                                <td class="px-6 py-5 whitespace-nowrap text-sm text-secondary font-medium">
-                                    @if($user->division)
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-2 h-2 rounded-full bg-accent"></div>
-                                            {{ $user->division->name }}
-                                        </div>
+                                <td class="px-6 py-4 text-nordic-gray">
+                                    {{ $user->division ? $user->division->name : '-' }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if($user->is_active)
+                                        <span class="inline-flex items-center text-xs font-bold text-emerald-600">
+                                            <span class="w-2 h-2 bg-emerald-500 rounded-full mr-2"></span> Active
+                                        </span>
                                     @else
-                                        <span class="text-gray-400 italic text-xs pl-4">- Non Divisi -</span>
+                                        <span class="inline-flex items-center text-xs font-bold text-rose-600">
+                                            <span class="w-2 h-2 bg-rose-500 rounded-full mr-2"></span> Inactive
+                                        </span>
                                     @endif
                                 </td>
-
-                                <td class="px-6 py-5 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <span class="text-lg font-bold text-primary">{{ $user->annual_leave_quota }}</span>
-                                        <span class="text-xs text-secondary/60 ml-1 font-medium">Hari</span>
-                                    </div>
-                                </td>
-
-                                <td class="px-8 py-5 whitespace-nowrap text-right text-sm font-medium">
-                                    <div class="flex justify-end items-center gap-3">
-                                        <a href="{{ route('users.edit', $user->id) }}" class="text-secondary hover:text-accent font-bold transition">Edit</a>
-                                        
-                                        @if(auth()->id() !== $user->id)
-                                        <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline-block" id="delete-form-{{ $user->id }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" onclick="confirmDelete('delete-form-{{ $user->id }}')" class="text-red-400 hover:text-red-600 font-bold transition">
-                                                Hapus
-                                            </button>
-                                        </form>
-                                        @endif
-                                    </div>
+                                <td class="px-6 py-4 text-right space-x-2">
+                                    <a href="{{ route('admin.users.edit', $user->id) }}" class="text-indigo-600 hover:text-indigo-900 font-medium text-xs uppercase tracking-wide">Edit</a>
+                                    
+                                    @if($user->id !== auth()->id())
+                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus user ini secara permanen?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-rose-600 hover:text-rose-900 font-medium text-xs uppercase tracking-wide">Hapus</button>
+                                    </form>
+                                    @endif
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-nordic-gray italic">
+                                    Tidak ada data user yang sesuai filter.
+                                </td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
-                
-                <div class="px-8 py-5 border-t border-cream bg-cream/20">
-                    {{ $users->links() }}
-                </div>
+
+                @if($users->hasPages())
+                    <div class="px-6 py-4 border-t border-nordic-mute bg-nordic-light">
+                        {{ $users->links() }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>

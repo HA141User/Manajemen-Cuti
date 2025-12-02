@@ -6,22 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('divisions', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique(); // Nama Divisi (harus unik)
+            $table->string('name')->unique();
             $table->text('description')->nullable();
-            
-            // Ketua Divisi (Manager)
-            // Relasi ke users.id. Nullable karena divisi baru mungkin belum ada ketuanya.
-            // onDelete('set null') artinya jika user manager dihapus, kolom ini jadi kosong (bukan error).
-            $table->foreignId('manager_id')->nullable()->constrained('users')->onDelete('set null');
-            
+            // Kita belum menambahkan leader_id di sini untuk menghindari error "Table users not found"
+            // field leader_id akan ditambahkan di migration terakhir (add_leader_to_divisions_table)
             $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('divisions');
