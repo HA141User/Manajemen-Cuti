@@ -70,7 +70,7 @@
                                     </form>
 
                                     <div x-data="{ open: false }" class="relative">
-                                        <button @click="open = !open" class="btn-danger bg-white text-rose-600 border border-rose-200 hover:bg-rose-50">
+                                        <button @click="open = !open" class="btn-primary bg-rose-600 text-white border border-rose-200 hover:bg-rose-50">
                                             Tolak
                                         </button>
                                         
